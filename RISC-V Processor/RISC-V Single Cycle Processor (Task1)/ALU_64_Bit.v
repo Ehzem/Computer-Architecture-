@@ -26,6 +26,8 @@ module ALU_64_bit
     output reg [63:0] Result,
     output ZERO
 );
+
+// Assigning Operations
 localparam [3:0]
     AND = 4'b0000,
     OR = 4'b0001,
@@ -37,17 +39,23 @@ localparam [3:0]
     Blt = 4'b1000,
     Bge = 4'b1010,
     Jal = 4'b1110;
-    
+  
+// temp variable to control the value of ZERO output of ALU  
 reg temp;
 
 always @ (ALUOperation, a, b) begin
     case (ALUOperation)
+        // Assigning Result the output based on Operation
         AND: Result = a & b;
         OR: Result = a | b;
         ADD: Result = a + b;
         Sub: Result = a - b;
         NOR: Result = ~(a | b);
         SLLI: Result = a << b;
+        
+        // Whenever you have to jump to an instruction Both Zero and Branch have to be 1
+        // Therefore temp is assigned 1 when you need to jump, else 0
+   
         Beq: begin
             if (a == b) begin
                 temp = 1;
@@ -72,13 +80,15 @@ always @ (ALUOperation, a, b) begin
                 temp = 0;
             end
         end
-        
+              
+        // When Jal Operation, temp = 1 to trigger jump
         Jal: temp = 1;
         
         default: Result = 0;
     endcase
 end
 
+// Assigning value of temp to ZERO
 assign ZERO = temp;
 
 endmodule
